@@ -149,8 +149,47 @@ def resolve_headless(
 
 
 def needs_no_sandbox() -> bool:
-    """Required under root (euid 0) — Chrome sandbox init fails there."""
-    return hasattr(os, "geteuid") and os.geteuid() == 0
+    """Whether Chrome must run without its sandbox on this host.
+
+    True when:
+    - running under root (euid 0) — sandbox init always fails there; or
+    - an explicit override asks for it: ``CDPBROWSER_NO_SANDBOX=1``; or
+    - a CI environment is detected (``CI``/``GITHUB_ACTIONS`` etc.) —
+      hosted runners abort Chrome (SIGABRT, exit -6) without it because
+      unprivileged user namespaces are unavailable.
+    """
+    if hasattr(os, "geteuid") and os.geteuid() == 0:
+        return True
+    env = os.environ
+    if str(env.get("CDPBROWSER_NO_SANDBOX", "")).strip().lower() in {
+        "1",
+        "true",
+        "yes",
+    }:
+        return True
+    return any(
+        env.get(name)
+        for name in ("CI", "GITHUB_ACTIONS", "GITLAB_CI", "JENKINS_HOME", "BUILD_ID")
+    )
+
+
+def needs_dev_shm_workaround() -> bool:
+    """Whether to add ``--disable-dev-shm-usage`` (small /dev/shm aborts Chrome).
+
+    Hosted CI runners ship a tiny /dev/shm; without this flag Chrome's
+    shared-memory regions overflow and the process aborts.
+    """
+    if str(os.environ.get("CDPBROWSER_DISABLE_DEV_SHM", "")).strip().lower() in {
+        "1",
+        "true",
+        "yes",
+    }:
+        return True
+    try:
+        shm_total = os.statvfs("/dev/shm").f_blocks * os.statvfs("/dev/shm").f_frsize
+    except OSError:
+        return False
+    return shm_total < 1 << 30  # < 1 GiB is the runner signature
 
 
 # ----------------------------------------------------------------------
@@ -288,6 +327,8 @@ class ChromeProcess:
             args.append("--headless=new")
         if no_sandbox:
             args.append("--no-sandbox")
+        if needs_dev_shm_workaround():
+            args.append("--disable-dev-shm-usage")
         args.extend(self._extra_args)
 
         popen_kwargs = {}

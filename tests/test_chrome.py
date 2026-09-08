@@ -164,7 +164,40 @@ class TestNeedsNoSandbox:
     )
     def test_non_root_uid_does_not_need_no_sandbox(self, monkeypatch):
         monkeypatch.setattr(os, "geteuid", lambda: 1000)
+        monkeypatch.delenv("CI", raising=False)
+        monkeypatch.delenv("GITHUB_ACTIONS", raising=False)
         assert needs_no_sandbox() is False
+
+    def test_ci_environment_requires_no_sandbox(self, monkeypatch):
+        monkeypatch.setattr(os, "geteuid", lambda: 1000)
+        monkeypatch.setenv("CI", "true")
+        assert needs_no_sandbox() is True
+
+    def test_explicit_env_override_forces_no_sandbox(self, monkeypatch):
+        monkeypatch.setattr(os, "geteuid", lambda: 1000)
+        monkeypatch.delenv("CI", raising=False)
+        monkeypatch.setenv("CDPBROWSER_NO_SANDBOX", "1")
+        assert needs_no_sandbox() is True
+
+    def test_dev_shm_workaround_under_1gib(self, monkeypatch):
+        from cdpbrowser.cdp.chrome import needs_dev_shm_workaround
+
+        class FakeStat:
+            f_blocks = 131072  # 128MiB worth of 1KiB blocks
+            f_frsize = 1024
+
+        monkeypatch.setattr(os, "statvfs", lambda path: FakeStat())
+        assert needs_dev_shm_workaround() is True
+
+    def test_dev_shm_workaround_off_when_spacious(self, monkeypatch):
+        from cdpbrowser.cdp.chrome import needs_dev_shm_workaround
+
+        class FakeStat:
+            f_blocks = 1 << 21  # 2 GiB worth of 1KiB blocks
+            f_frsize = 1024
+
+        monkeypatch.setattr(os, "statvfs", lambda path: FakeStat())
+        assert needs_dev_shm_workaround() is False
 
 
 # ----------------------------------------------------------------------
