@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>frame inner</title></head>
+<body>
+  <span data-testid="inner-marker">inner</span>
+  <button data-testid="inner-button" type="button">inner</button>
+  <script>
+    document
+      .querySelector('[data-testid="inner-button"]')
+      .addEventListener('click', function (event) {
+        event.target.textContent = 'inner-clicked';
+      });
+  </script>
+</body>
+</html>

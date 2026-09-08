@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>CdpBrowser Demo</title>
+</head>
+<body>
+  <h1 data-testid="page-title">CdpBrowser Demo</h1>
+  <input data-testid="name-input" type="text" value="">
+  <span data-testid="name-mirror"></span>
+  <span data-testid="doomed-element">removal target</span>
+  <button data-testid="vanish-button" type="button">Remove element</button>
+  <button data-testid="swap-button" type="button">before click</button>
+  <script>
+    document
+      .querySelector('[data-testid="name-input"]')
+      .addEventListener('input', function () {
+        document.querySelector('[data-testid="name-mirror"]').textContent =
+          this.value;
+      });
+    document
+      .querySelector('[data-testid="swap-button"]')
+      .addEventListener('click', function () {
+      this.textContent = 'after click';
+      });
+    document
+      .querySelector('[data-testid="vanish-button"]')
+      .addEventListener('click', function () {
+        setTimeout(function () {
+          var doomed = document.querySelector('[data-testid="doomed-element"]');
+          if (doomed) {
+            doomed.remove();
+          }
+        }, 250);
+      });
+  </script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<!doctype html>
+<!--
+  a11y.html — accessibility locator (role:/label:) fixture.
+
+  Document order decides match results, so element placement matters:
+
+  * Three buttons up top — role:button (no name) must return #btn-save,
+    the document-order first.
+  * #btn-save / #btn-cancel share the implicit role (button) with distinct
+    names — verifying that role:"button Save" two-part matching picks the right one.
+  * #btn-aria checks that aria-label wins over name-from-content
+    ("Settings") — its accessible name is "Admin Settings", so
+    role:"button Settings" must NOT match it.
+  * Two label[for]-bound inputs (#email, #pw) plus #ph-input with only a
+    placeholder — exercising each accname priority path of the label strategy.
+  * Implicit-role elements: h2 (heading), a[href] (link), select (combobox),
+    input[type=checkbox].
+  * #click-log is the click-effect log — records which button was actually
+    clicked via the data-clicked attribute.
+-->
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>CdpBrowser Accessibility</title>
+</head>
+<body>
+  <button id="btn-save" type="button">Save</button>
+  <button id="btn-cancel" type="button">Cancel</button>
+  <button id="btn-aria" type="button" aria-label="Admin Settings">Settings</button>
+
+  <label for="email">Email</label>
+  <input id="email" type="text">
+  <label for="pw">Password</label>
+  <input id="pw" type="password">
+
+  <h2 id="section-title">Section Title</h2>
+  <a href="#detail" id="detail-link">View Details</a>
+  <select id="pet-select">
+    <option value="dog">Dog</option>
+    <option value="cat">Cat</option>
+  </select>
+  <label for="agree">Agree to Terms</label>
+  <input id="agree" type="checkbox">
+
+  <input id="ph-input" type="text" placeholder="Search terms">
+
+  <div id="click-log" data-testid="click-log"></div>
+  <script>
+    function mark(id) {
+      document.getElementById('click-log').setAttribute('data-clicked', id);
+    }
+    document.getElementById('btn-save').addEventListener('click', function () {
+      mark('btn-save');
+    });
+    document.getElementById('btn-cancel').addEventListener('click', function () {
+      mark('btn-cancel');
+    });
+    document.getElementById('btn-aria').addEventListener('click', function () {
+      mark('btn-aria');
+    });
+  </script>
+</body>
+</html>

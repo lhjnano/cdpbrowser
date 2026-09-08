@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  core-only:
+    # Verifies option-B packaging: the core installs and works without
+    # robotframework, and the adapter import fails with guidance.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install core only (no extras)
+        run: pip install .
+
+      - name: Core imports and adapter guard
+        run: |
+          python - <<'PY'
+          import cdpbrowser
+          assert cdpbrowser.PageSession is not None
+          try:
+              cdpbrowser.CdpBrowser
+          except ImportError as exc:
+              assert "cdpbrowser[robot]" in str(exc), exc
+          else:
+              raise SystemExit("CdpBrowser must be guarded without robotframework")
+          print("core-only install OK")
+          PY
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install package (dev + robot extras)
+        run: pip install -e ".[dev,robot]"
+
+      - name: Install Chrome for Testing
+        run: npx --yes @puppeteer/browsers install chrome@stable --path ~/.cache/puppeteer
+
+      - name: Resolve Chrome path
+        run: |
+          CHROME_BIN=$(find ~/.cache/puppeteer -type f -name chrome | head -n 1)
+          if [ -z "$CHROME_BIN" ]; then
+            echo "Chrome binary not found under ~/.cache/puppeteer" >&2
+            exit 1
+          fi
+          echo "Using Chrome: $CHROME_BIN"
+          echo "CDPBROWSER_CHROME_PATH=$CHROME_BIN" >> "$GITHUB_ENV"
+
+      - name: Run unit tests
+        run: pytest tests/ -q
+
+      - name: Run acceptance tests
+        run: robot --outputdir results atest/
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: results/
+          if-no-files-found: ignore

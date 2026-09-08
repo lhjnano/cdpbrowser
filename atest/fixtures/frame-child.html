@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>frame child</title></head>
+<body>
+  <span data-testid="child-name">child</span>
+  <button data-testid="child-button" type="button">press</button>
+  <input data-testid="child-input" value="">
+  <span data-testid="child-mirror"></span>
+  <script>
+    document
+      .querySelector('[data-testid="child-input"]')
+      .addEventListener('input', function (event) {
+        document.querySelector('[data-testid="child-mirror"]').textContent =
+          event.target.value;
+      });
+    document
+      .querySelector('[data-testid="child-button"]')
+      .addEventListener('click', function (event) {
+        event.target.textContent = 'clicked';
+      });
+  </script>
+</body>
+</html>

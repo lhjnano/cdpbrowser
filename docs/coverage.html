@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CdpBrowser — Test Coverage Heatmap (layer x method)</title>
+<style>
+:root{--bg:#f6f8fa;--card:#fff;--border:#d8dee4;--text:#1f2328;--muted:#57606a;--accent:#0969da}
+*{box-sizing:border-box}
+body{margin:0;padding:28px 16px;background:var(--bg);color:var(--text);font:15px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.wrap{max-width:1120px;margin:0 auto}
+h1{font-size:24px;margin:0 0 6px}
+h2{font-size:19px;border-bottom:2px solid var(--accent);padding-bottom:6px;margin:36px 0 12px}
+.meta{color:var(--muted);font-size:13.5px;margin:0 0 4px}
+table{border-collapse:collapse;background:var(--card);font-size:13.5px;width:100%}
+th,td{border:1px solid var(--border);padding:6px 11px;text-align:left;vertical-align:top}
+th{background:#f0f3f6;font-size:12.5px;color:#424a53;white-space:nowrap}
+td.num,th.num{text-align:center;font-variant-numeric:tabular-nums}
+.b-done{display:inline-block;min-width:2em;text-align:center;padding:1px 7px;border-radius:999px;font-weight:700;font-size:12px;background:#dafbe1;color:#116329}
+.b-part{display:inline-block;min-width:2em;text-align:center;padding:1px 7px;border-radius:999px;font-weight:700;font-size:12px;background:#fff8c5;color:#4d2d00}
+.b-todo{display:inline-block;min-width:2em;text-align:center;padding:1px 7px;border-radius:999px;font-weight:700;font-size:12px;background:#ffebe9;color:#82071e}
+.b-na{color:#8b949e}
+.note{color:var(--muted);font-size:12.5px;margin:8px 0 0}
+.cards{display:flex;gap:12px;flex-wrap:wrap;margin:16px 0}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 22px;min-width:150px}
+.card .n{font-size:26px;font-weight:800;color:var(--accent)}
+.card .l{font-size:12.5px;color:var(--muted)}
+code{background:#eff2f5;border-radius:4px;padding:0 5px;font-size:12.5px}
+footer{margin-top:36px;padding-top:14px;border-top:1px solid var(--border);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>CdpBrowser — Test Coverage Heatmap</h1>
+<p class="meta">Layer &times; method matrix &middot; combined pytest + Robot branch coverage &middot; gap classification &amp; cross-validation findings</p>
+
+<div class="cards">
+  <div class="card"><div class="n">14</div><div class="l">modules measured</div></div>
+  <div class="card"><div class="n">87%</div><div class="l">combined branch coverage</div></div>
+  <div class="card"><div class="n">28</div><div class="l">Robot acceptance tests passing</div></div>
+  <div class="card"><div class="n">11</div><div class="l">bugs found via cross-validation</div></div>
+</div>
+
+<h2>1. Module &times; test-method matrix</h2>
+<p class="note">How each layer is exercised. <span class="b-done">✓</span> exercised &middot;
+<span class="b-part">◐</span> partial &middot; <span class="b-todo">·</span> not applicable
+to that method &middot; <span class="b-na">—</span> not applicable.</p>
+<table>
+<tr><th>Module</th><th class="num">unit-pure</th><th class="num">unit-mock</th><th class="num">real-chrome</th><th class="num">robot-atest</th></tr>
+<tr><td><code>cdp/transport.py</code></td><td class='num'><span class="b-todo">·</span></td><td class='num'><span class="b-done">✓</span></td><td class='num'><span class="b-done">✓</span></td><td class='num'><span class="b-done">✓</span></td></tr>
+<tr><td><code>cdp/chrome.py</code></td><td class='num'><span class="b-done">✓</span></td><td class='num'><span class="b-todo">·</span></td><td class='num'><span class="b-done">✓</span></td><td class='num'><span class="b-done">✓</span></td></tr>
+<tr><td><code>cdp/errors.py</code></td><td class='num'><span class="b-done">✓</span></td><td class='num'><span class="b-done">✓</span></td><td class='num'><span class="b-done">✓</span></td><td class='num'><span class="b-na">—</span></td></tr>
+<tr><td><code>locators.py</code></td><td class='num'><span class="b-done">✓</span></td><td class='num'><span class="b-todo">·</span></td><td class='num'><span class="b-done">✓</span></td><td class='num'><span class="b-done">✓</span></td></tr>
+<tr><td><code>keys.py</code></td><td class='num'><span class="b-done">✓</span></td><td class='num'><span class="b-todo">·</span></td><td class='num'><span class="b-done">✓</span></td><td class='num'><span class="b-done">✓</span></td></tr>
+<tr><td><code>polling.py</code></td><td class='num'><span class="b-done">✓</span></td><td class='num'><span class="b-todo">·</span></td><td class='num'><span class="b-done">✓</span></td><td class='num'><span class="b-done">✓</span></td></tr>
+<tr><td><code>promises.py</code></td><td class='num'><span class="b-todo">·</span></td><td class='num'><span class="b-done">✓</span></td><td class='num'><span class="b-done">✓</span></td><td class='num'><span class="b-done">✓</span></td></tr>
+<tr><td><code>page.py</code></td><td class='num'><span class="b-part">◐</span></td><td class='num'><span class="b-part">◐</span></td><td class='num'><span class="b-done">✓</span></td><td class='num'><span class="b-done">✓</span></td></tr>
+<tr><td><code>bridge.js</code></td><td class='num'><span class="b-todo">·</span></td><td class='num'><span class="b-todo">·</span></td><td class='num'><span class="b-done">✓</span></td><td class='num'><span class="b-done">✓</span></td></tr>
+<tr><td><code>recorder.js</code></td><td class='num'><span class="b-todo">·</span></td><td class='num'><span class="b-todo">·</span></td><td class='num'><span class="b-done">✓</span></td><td class='num'><span class="b-todo">·</span></td></tr>
+<tr><td><code>recorder.py</code></td><td class='num'><span class="b-done">✓</span></td><td class='num'><span class="b-todo">·</span></td><td class='num'><span class="b-done">✓</span></td><td class='num'><span class="b-done">✓</span></td></tr>
+<tr><td><code>library.py</code></td><td class='num'><span class="b-part">◐</span></td><td class='num'><span class="b-done">✓</span></td><td class='num'><span class="b-done">✓</span></td><td class='num'><span class="b-done">✓</span></td></tr>
+<tr><td><code>listener.py</code></td><td class='num'><span class="b-part">◐</span></td><td class='num'><span class="b-todo">·</span></td><td class='num'><span class="b-todo">·</span></td><td class='num'><span class="b-done">✓</span></td></tr>
+<tr><td><code>visual.py</code></td><td class='num'><span class="b-done">✓</span></td><td class='num'><span class="b-todo">·</span></td><td class='num'><span class="b-done">✓</span></td><td class='num'><span class="b-done">✓</span></td></tr>
+</table>
+<p class="note">bridge.js / recorder.js have no line coverage of their own — they are
+exercised through the Python layers that inject them; their truth lives in the
+real-chrome and robot-atest columns.</p>
+
+<h2>2. Combined branch coverage (pytest + Robot under coverage)</h2>
+<table>
+<tr><th>Module</th><th class="num">Stmts</th><th class="num">Miss</th><th class="num">Branches</th><th class="num">Partial</th><th class="num">Cover</th></tr>
+<tr><td><code>__init__.py</code></td><td class='num'>24</td><td class='num'>5</td><td class='num'>4</td><td class='num'>1</td><td class='num'><span class="b-todo">79%</span></td></tr>
+<tr><td><code>cdp/chrome.py</code></td><td class='num'>243</td><td class='num'>38</td><td class='num'>84</td><td class='num'>16</td><td class='num'><span class="b-todo">83%</span></td></tr>
+<tr><td><code>listener.py</code></td><td class='num'>43</td><td class='num'>5</td><td class='num'>4</td><td class='num'>1</td><td class='num'><span class="b-todo">83%</span></td></tr>
+<tr><td><code>page.py</code></td><td class='num'>830</td><td class='num'>100</td><td class='num'>264</td><td class='num'>69</td><td class='num'><span class="b-todo">84%</span></td></tr>
+<tr><td><code>cdp/transport.py</code></td><td class='num'>183</td><td class='num'>25</td><td class='num'>34</td><td class='num'>5</td><td class='num'><span class="b-part">86%</span></td></tr>
+<tr><td><code>library.py</code></td><td class='num'>541</td><td class='num'>54</td><td class='num'>134</td><td class='num'>17</td><td class='num'><span class="b-part">89%</span></td></tr>
+<tr><td><code>promises.py</code></td><td class='num'>155</td><td class='num'>10</td><td class='num'>44</td><td class='num'>9</td><td class='num'><span class="b-part">90%</span></td></tr>
+<tr><td><code>visual.py</code></td><td class='num'>133</td><td class='num'>8</td><td class='num'>46</td><td class='num'>6</td><td class='num'><span class="b-part">91%</span></td></tr>
+<tr><td><code>recorder.py</code></td><td class='num'>90</td><td class='num'>5</td><td class='num'>46</td><td class='num'>6</td><td class='num'><span class="b-part">92%</span></td></tr>
+<tr><td><code>polling.py</code></td><td class='num'>48</td><td class='num'>1</td><td class='num'>20</td><td class='num'>1</td><td class='num'><span class="b-done">97%</span></td></tr>
+<tr><td><code>locators.py</code></td><td class='num'>62</td><td class='num'>1</td><td class='num'>28</td><td class='num'>1</td><td class='num'><span class="b-done">98%</span></td></tr>
+<tr><td><code>cdp/__init__.py</code></td><td class='num'>4</td><td class='num'>0</td><td class='num'>0</td><td class='num'>0</td><td class='num'><span class="b-done">100%</span></td></tr>
+<tr><td><code>cdp/errors.py</code></td><td class='num'>15</td><td class='num'>0</td><td class='num'>2</td><td class='num'>0</td><td class='num'><span class="b-done">100%</span></td></tr>
+<tr><td><code>keys.py</code></td><td class='num'>28</td><td class='num'>0</td><td class='num'>12</td><td class='num'>0</td><td class='num'><span class="b-done">100%</span></td></tr>
+</table>
+<p class="note">Measured as <code>coverage run -m pytest</code> + <code>coverage run -m robot</code>,
+combined — keyword-adapter lines exercised only by Robot runs are counted, not
+hidden. Reproduce with <code>make coverage</code>.</p>
+
+<h2>3. Remaining gaps — classified, with reasons</h2>
+<table>
+<tr><th>Class</th><th>Where</th><th>Why it is not covered / why that is acceptable</th></tr>
+<tr><td>✅ filled</td><td><code>__init__.py guards</code></td><td>Robot-missing import guards verified by subprocess tests (test_packaging.py) — isolated processes, so their lines are outside the combined measurement by design.</td></tr>
+<tr><td>🟡 env-constrained</td><td><code>chrome.py kill fallbacks (SIGKILL path, stderr diagnostics 408-441)</code></td><td>Forcing a Chrome process to ignore SIGTERM deterministically is not reproducible in CI; covered by defensive coding + manual verification.</td></tr>
+<tr><td>🟡 env-constrained</td><td><code>chrome.py needs_no_sandbox under root</code></td><td>Requires euid 0; CI never runs as root. Pure function is unit-tested for non-root.</td></tr>
+<tr><td>⬜ defensive-only</td><td><code>transport.py close-error branches (234-264)</code></td><td>Unsubscribes/cleanups when the loop is already dead — defensive paths that only trigger on transport-internal races.</td></tr>
+<tr><td>⬜ defensive-only</td><td><code>promises.py dispatcher matcher/response exception swallowing</code></td><td>Logged-not-raised paths; the error-completion contract itself IS tested (test_gapfill_core).</td></tr>
+<tr><td>⬜ defensive-only</td><td><code>library.py evidence artifact fallbacks (940-953, 1087)</code></td><td>Artifact-save failures must never flip a verdict — deliberately quiet, exercised only with a poisoned filesystem.</td></tr>
+<tr><td>⬜ subprocess-isolated</td><td><code>__init__.py / CdpBrowser.py shim guard lines</code></td><td>The guards run in blocked-robot subprocesses (test_packaging.py); coverage of subprocesses is intentionally not wired.</td></tr>
+<tr><td>⬜ defensive-only</td><td><code>page.py frame-context race retries (1386-1430)</code></td><td>Short race windows after scope entry — polling retries whose happy path is covered; the retry branch needs an artificially slowed browser.</td></tr>
+<tr><td>🟡 env-constrained</td><td><code>listener.py failure-capture paths (90-112)</code></td><td>Only reachable when a Robot test FAILS with a live browser; atest is green by definition. Verified manually by breaking a suite once.</td></tr>
+</table>
+
+<h2>4. Bugs found through cross-validation</h2>
+<p class="note">Real defects this suite (and its recording replay round) surfaced —
+each row is regression-pinned by a test.</p>
+<table>
+<tr><th>Area</th><th>Bug</th><th>Symptom &rarr; cause</th><th>Fix</th></tr>
+<tr><td>Recorder</td><td><b>Runtime.addBinding was callable but silent</b></td><td>bindingCalled events are only delivered after Runtime.enable — recording saw nothing until the domain was enabled at start.</td><td><code>start_recording sends Runtime.enable first</code></td></tr>
+<tr><td>Recorder</td><td><b>Arm flag died across navigation</b></td><td>window.__cdpbRecOn was set on the current document only; the first recorded navigation silently stopped recording.</td><td><code>flag registered as its own tracked new-document script, removed on stop</code></td></tr>
+<tr><td>Recorder</td><td><b>Duplicate fill after ENTER</b></td><td>The change event fired on Enter-commit re-emitted the identical fill.</td><td><code>lastEmittedFill key dedupe in flushFill</code></td></tr>
+<tr><td>Recorder</td><td><b>Robot cell quoting corrupted values</b></td><td>Values with spaces were wrapped in double quotes — Robot keeps quotes literal, so replays filled "Jane Doe" with quotes.</td><td><code>escape only Robot syntax characters ($ @ & # \), never quote</code></td></tr>
+<tr><td>Recorder</td><td><b>Programmatic blob-anchor double recording</b></td><td>downloadBlob helpers click a transient <a download> — the synthetic click was recorded with a dead structural selector.</td><td><code>recorder skips blob:/data: download anchors</code></td></tr>
+<tr><td>Dialogs</td><td><b>clearBrowserCoins absent at browser endpoint</b></td><td>Network.clearBrowserCookies exists only via page session on Chrome 131 — browser-level send raised -32601.</td><td><code>routed through the session</code></td></tr>
+<tr><td>Downloads</td><td><b>Broker session binding hid browser-level events</b></td><td>Browser.downloadProgress arrives without sessionId; a session-bound broker arm never matched.</td><td><code>download broker is created unbound</code></td></tr>
+<tr><td>Shadow DOM</td><td><b>ShadowRoot has no evaluate()</b></td><td>Deep XPath first called root.evaluate (absent), then document.evaluate with a #document-fragment context (NotSupportedError).</td><td><code>context = root.firstElementChild + // → .// rewrite</code></td></tr>
+<tr><td>Scrolling</td><td><b>Wheel applied asynchronously</b></td><td>Reading scrollY right after dispatch saw the pre-scroll value — one-event-stale reads.</td><td><code>scroll_by polls briefly for the metrics to settle</code></td></tr>
+<tr><td>Keys</td><td><b>Special keys ignored (rawKeyDown) + snake_case wire fields</b></td><td>Chrome ignores keyDown without text for special keys, and the CDP wire needs camelCase field names.</td><td><code>down-type rule + transport-boundary rename</code></td></tr>
+<tr><td>Dialogs</td><td><b>Lazy coordinator lost un-armed dialogs</b></td><td>Dialog subscription was created on first arm — dialogs opened without one were lost and the backstop never fired.</td><td><code>coordinator starts eagerly at attach + prime()</code></td></tr>
+</table>
+
+<footer>
+Generated by <code>tools/generate_coverage_report.py</code> from coverage.json +
+results/output.xml &middot; regenerate with <code>make coverage</code>.
+</footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="utf-8"><title>mouse fixtures</title>
+<style>
+  #spacer { height: 3000px; }
+  #hover-zone { width: 200px; height: 100px; background: #ddd; }
+  #hover-zone:hover { background: #0a0; }
+  #drop-zone { width: 200px; height: 100px; background: #eee; margin-top: 20px; }
+  canvas { border: 1px solid #999; }
+</style>
+</head>
+<body>
+  <h1 data-testid="title">Mouse Fixtures</h1>
+  <div id="spacer"></div>
+  <button data-testid="deep-button" type="button">deep</button>
+  <div id="hover-zone" data-testid="hover-zone"></div>
+  <div id="drop-zone" data-testid="drop-zone"></div>
+  <canvas id="pad" width="300" height="150" data-testid="pad"></canvas>
+  <span data-testid="mouse-log"></span>
+  <script>
+    var log = document.querySelector('[data-testid="mouse-log"]');
+    function record(kind, detail) {
+      var line = kind + ' ' + detail;
+      log.textContent = log.textContent ? log.textContent + ';' + line : line;
+    }
+    // Record only real events — isTrusted separates them from synthetic ones.
+    ['mousedown', 'mouseup', 'click'].forEach(function (kind) {
+      document.addEventListener(kind, function (e) {
+        if (e.isTrusted) record(kind, Math.round(e.clientX) + ',' + Math.round(e.clientY));
+      });
+    });
+    document.querySelector('[data-testid="deep-button"]').addEventListener(
+      'click', function (e) { record('deep', e.isTrusted); });
+    document.querySelector('[data-testid="hover-zone"]').addEventListener(
+      'mouseenter', function (e) { record('hover', document.querySelector('style')); });
+    // Raw mouse drag: recorded when a drop lands on the drop-zone.
+    var dz = document.querySelector('#drop-zone');
+    dz.addEventListener('mouseup', function (e) {
+      if (e.isTrusted) record('drop-at', Math.round(e.clientX) + ',' + Math.round(e.clientY));
+    });
+    // Canvas: records click coordinates (the anchor-free verification path).
+    var pad = document.querySelector('#pad');
+    pad.addEventListener('click', function (e) {
+      if (!e.isTrusted) return;
+      var r = pad.getBoundingClientRect();
+      record('canvas', Math.round(e.clientX - r.left) + ',' + Math.round(e.clientY - r.top));
+    });
+  </script>
+</body>
+</html>

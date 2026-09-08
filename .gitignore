@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+
+# Test & measurement artifacts (regenerable via make test / make coverage)
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.json
+results/
+downloads/
+evidence/
+
+# Editors / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store

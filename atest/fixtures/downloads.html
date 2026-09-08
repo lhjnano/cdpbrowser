@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="utf-8"><title>download fixtures</title></head>
+<body>
+  <h1 data-testid="title">Download Fixtures</h1>
+  <button data-testid="blob-download" type="button">download report</button>
+  <button data-testid="blob-download-2" type="button">download notes</button>
+  <script>
+    function downloadBlob(filename, text) {
+      var blob = new Blob([text], {type: 'text/plain'});
+      var a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function () { URL.revokeObjectURL(a.href); }, 5000);
+    }
+    document.querySelector('[data-testid="blob-download"]').addEventListener(
+      'click', function () { downloadBlob('report.txt', 'quarterly report body'); });
+    document.querySelector('[data-testid="blob-download-2"]').addEventListener(
+      'click', function () { downloadBlob('notes.txt', 'meeting notes body'); });
+  </script>
+</body>
+</html>

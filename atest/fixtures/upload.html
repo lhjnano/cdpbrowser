@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="utf-8"><title>upload fixtures</title>
+<style>
+  #tall { height: 4000px; }
+  #deep-target { margin-top: 10px; }
+</style>
+</head>
+<body>
+  <h1 data-testid="title">Upload Fixtures</h1>
+  <div id="tall"></div>
+  <input type="file" data-testid="file-input" multiple>
+  <span data-testid="upload-log"></span>
+  <div id="deep-target" data-testid="deep-target">deep</div>
+  <script>
+    var logEl = document.querySelector('[data-testid="upload-log"]');
+    document.querySelector('[data-testid="file-input"]').addEventListener(
+      'change', function (e) {
+        var names = [];
+        for (var i = 0; i < e.target.files.length; i++) {
+          names.push(e.target.files[i].name + ':' + e.target.files[i].size);
+        }
+        logEl.textContent = names.join('|');
+      });
+  </script>
+</body>
+</html>

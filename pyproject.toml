@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cdpbrowser"
+version = "0.1.0"
+description = "Framework-independent pure-CDP browser automation core for Python, with an optional Robot Framework adapter"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "websockets>=17.0",
+]
+
+[project.optional-dependencies]
+robot = ["robotframework>=7.0"]
+dev = ["pytest"]
+visual = ["Pillow>=10"]
+
+[tool.setuptools]
+py-modules = ["CdpBrowser"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+cdpbrowser = ["*.js"]

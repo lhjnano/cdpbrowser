@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="utf-8"><title>alert fixtures</title></head>
+<body>
+  <h1 data-testid="title">Alert Fixtures</h1>
+  <button data-testid="alert-button" type="button">alert</button>
+  <button data-testid="confirm-button" type="button">confirm</button>
+  <button data-testid="prompt-button" type="button">prompt</button>
+  <span data-testid="confirm-result"></span>
+  <span data-testid="prompt-result"></span>
+  <script>
+    document.querySelector('[data-testid="alert-button"]').addEventListener(
+      'click', function () { alert("Passwords don't match"); });
+    document.querySelector('[data-testid="confirm-button"]').addEventListener(
+      'click', function () {
+        document.querySelector('[data-testid="confirm-result"]').textContent =
+          confirm("Proceed?") ? 'confirmed' : 'dismissed';
+      });
+    document.querySelector('[data-testid="prompt-button"]').addEventListener(
+      'click', function () {
+        document.querySelector('[data-testid="prompt-result"]').textContent =
+          'name=' + prompt("Your name?", "anon");
+      });
+  </script>
+</body>
+</html>

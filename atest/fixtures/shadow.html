@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="utf-8"><title>shadow fixtures</title></head>
+<body>
+  <h1 data-testid="title">Shadow Fixtures</h1>
+  <div id="light-host">
+    <button data-testid="light-btn" type="button">light</button>
+  </div>
+  <shadow-panel id="open-panel"></shadow-panel>
+  <closed-panel id="closed-panel"></closed-panel>
+  <script>
+    customElements.define('shadow-panel', class extends HTMLElement {
+      constructor() {
+        super();
+        var root = this.attachShadow({ mode: 'open' });
+        root.innerHTML =
+          '<div class="inner">' +
+          '  <button data-testid="shadow-btn" type="button">shadow submit</button>' +
+          '  <input data-testid="shadow-input">' +
+          '  <span data-testid="shadow-mirror"></span>' +
+          '</div>';
+        root.querySelector('[data-testid="shadow-input"]').addEventListener(
+          'input', function (e) {
+            root.querySelector('[data-testid="shadow-mirror"]').textContent =
+              'mirror:' + e.target.value;
+          });
+        root.querySelector('[data-testid="shadow-btn"]').addEventListener(
+          'click', function (e) { e.target.textContent = 'shadow clicked'; });
+      }
+    });
+    customElements.define('closed-panel', class extends HTMLElement {
+      constructor() {
+        super();
+        var root = this.attachShadow({ mode: 'closed' });
+        root.innerHTML = '<button data-testid="secret-btn">hidden</button>';
+      }
+    });
+  </script>
+</body>
+</html>

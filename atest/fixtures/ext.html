@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head><meta charset="utf-8"><title>ext fixtures</title></head>
+<body>
+  <h1 data-testid="title">Ext Fixtures</h1>
+  <div id="grid-users" class="x-grid"><button id="btn-save" type="button">Save</button><button id="btn-cancel" type="button">Cancel</button></div>
+  <div id="panel-main" class="x-panel"><input id="field-email"></div>
+  <div id="toolbar-top" class="x-toolbar"><button id="btn-new" type="button">New</button></div>
+  <script>
+    // Minimal fake Ext — provides just the ComponentQuery interface, no real Ext JS.
+    // Reduced selector grammar: '#itemId', 'xtype', 'xtype[attr=value]',
+    // space = descendant chain (not necessarily direct — same as real ComponentQuery).
+    (function () {
+      function comp(xtype, itemId, dom, extra) {
+        return Object.assign({ xtype: xtype, itemId: itemId, el: { dom: dom } }, extra || {});
+      }
+      var registry = [
+        comp('grid', 'users', document.getElementById('grid-users')),
+        comp('button', 'save', document.getElementById('btn-save'), { text: 'Save' }),
+        comp('button', 'cancel', document.getElementById('btn-cancel'), { text: 'Cancel' }),
+        comp('panel', 'main', document.getElementById('panel-main')),
+        comp('textfield', 'email', document.getElementById('field-email'), { value: ''}),
+        comp('toolbar', 'top', document.getElementById('toolbar-top')),
+        comp('button', 'new', document.getElementById('btn-new'), { text: 'New' }),
+      ];
+      function matchesToken(c, token) {
+        var attrMatch = token.match(/^([a-zA-Z]+)\[([^=]+)=(.*)\]$/);
+        if (attrMatch) {
+          if (c.xtype !== attrMatch[1]) return false;
+          var attr = attrMatch[2] === 'itemId' ? c.itemId : c[attrMatch[2]];
+          return String(attr) === attrMatch[3];
+        }
+        if (token.charAt(0) === '#') {
+          return c.itemId === token.slice(1);
+        }
+        return c.xtype === token;
+      }
+      window.Ext = {
+        ComponentQuery: {
+          query: function (selector) {
+            var tokens = String(selector).trim().split(/\s+/).filter(Boolean);
+            var last = tokens[tokens.length - 1];
+            return registry.filter(function (c) {
+              // ComponentQuery semantics: candidates match the LAST token;
+              // every earlier token must be matched by some ancestor component.
+              if (!matchesToken(c, last)) {
+                return false;
+              }
+              for (var i = 0; i < tokens.length - 1; i++) {
+                var ancestor = registry.find(function (o) { return matchesToken(o, tokens[i]); });
+                if (!ancestor || !ancestor.el.dom.contains(c.el.dom)) {
+                  return false;
+                }
+              }
+              return true;
+            });
+          }
+        }
+      };
+    })();
+  </script>
+</body>
+</html>

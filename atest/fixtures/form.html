@@ -1,0 +1,63 @@
+<!doctype html>
+<!--
+  form.html — real-world scenario fixture (modeled on the kopia HTMLUI E2E pattern).
+
+  NOTE: automatic alert-dialog handling (Handle Alert) is P1 scope. This
+  fixture wraps window.alert with a hook that (1) records the message on
+  window.__lastAlert and (2) exposes the same message in the inline element
+  (testid:alert-message). That way the actual alert() invocation can be
+  verified via JS event state without a native dialog.
+
+  On matching input, the success element is created dynamically after a
+  250ms delay — a slow element that demonstrates poll-by-default behavior.
+-->
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>CdpBrowser Signup Form</title>
+</head>
+<body>
+  <h1 data-testid="page-title">Signup Form</h1>
+  <form data-testid="signup-form">
+    <input data-testid="password" type="password" value="">
+    <input data-testid="confirm-password" type="password" value="">
+    <button data-testid="submit" type="submit">Sign up</button>
+  </form>
+  <script>
+    // alert hook — intercepts the real alert(), records + exposes inline.
+    // (In headless, native dialogs cannot be verified without the P1
+    // Handle Alert keyword, so we verify via event state instead.)
+    window.__lastAlert = null;
+    window.alert = function (message) {
+      var text = String(message);
+      window.__lastAlert = text;
+      var el = document.querySelector('[data-testid="alert-message"]');
+      if (!el) {
+        el = document.createElement('div');
+        el.setAttribute('data-testid', 'alert-message');
+        document.body.appendChild(el);
+      }
+      el.textContent = text;
+    };
+
+    document
+      .querySelector('[data-testid="signup-form"]')
+      .addEventListener('submit', function (event) {
+        event.preventDefault();
+        var password = document.querySelector('[data-testid="password"]').value;
+        var confirm = document.querySelector('[data-testid="confirm-password"]').value;
+        if (password !== confirm) {
+          alert("Passwords don't match");
+          return;
+        }
+        this.style.display = 'none';
+        setTimeout(function () {
+          var success = document.createElement('div');
+          success.setAttribute('data-testid', 'success');
+      success.textContent = 'Sign-up complete';
+          document.body.appendChild(success);
+        }, 250);
+      });
+  </script>
+</body>
+</html>
