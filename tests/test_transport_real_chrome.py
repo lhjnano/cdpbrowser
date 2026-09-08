@@ -90,7 +90,11 @@ def chrome():
         "--disable-dev-shm-usage",
         f"--user-data-dir={user_data_dir}",
     ]
-    if hasattr(os, "geteuid") and os.geteuid() == 0:
+    # Reuse the launcher's detection — hosted CI runners abort Chrome
+    # (exit -6) without --no-sandbox even unprivileged.
+    from cdpbrowser.cdp.chrome import needs_no_sandbox
+
+    if needs_no_sandbox():
         args.append("--no-sandbox")
 
     proc = subprocess.Popen(
