@@ -42,8 +42,8 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install package (dev + robot extras)
-        run: pip install -e ".[dev,robot]"
+      - name: Install package (dev + robot + visual extras)
+        run: pip install -e ".[dev,robot,visual]"
 
       - name: Install Chrome for Testing
         run: npx --yes @puppeteer/browsers install chrome@stable --path ~/.cache/puppeteer
