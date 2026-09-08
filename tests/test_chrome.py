@@ -272,12 +272,44 @@ class TestChromeProcessReal:
             time.sleep(0.05)
         assert not os.path.exists(user_data_dir)
 
-    def test_explicit_no_sandbox_false_is_respected(self, launch_chrome):
-        proc = launch_chrome(no_sandbox=False)
-        proc.start()
-        assert proc.ws_url is not None
-        proc.stop()
-        assert proc.process.poll() is not None
+    def test_explicit_no_sandbox_false_is_respected(self, monkeypatch, tmp_path):
+        # The contract is "an explicit no_sandbox is honored over
+        # auto-detection" — verify via argv capture instead of a real
+        # launch: on CI runners Chrome genuinely dies without the sandbox,
+        # which would conflate flag plumbing with environment reality.
+        captured: dict = {}
+
+        class FakePopen:
+            def __init__(self, args, **kwargs):
+                captured["args"] = args
+
+            def poll(self):
+                return 0  # pretend the process already exited
+
+            def terminate(self):
+                pass
+
+            def kill(self):
+                pass
+
+            def wait(self, timeout=None):
+                return 0
+
+            @property
+            def stderr(self):
+                import io
+
+                return io.StringIO("")  # EOF immediately — reader exits fast
+
+        monkeypatch.setattr(chrome_mod.subprocess, "Popen", FakePopen)
+        proc = chrome_mod.ChromeProcess(
+            str(tmp_path / "fake-chrome"), no_sandbox=False
+        )
+        with pytest.raises(chrome_mod.ChromeLaunchError):
+            proc.start()  # fake Popen has no stdout — start() fails later
+        argv = captured["args"]
+        assert argv[0].endswith("fake-chrome")  # launch was attempted
+        assert "--no-sandbox" not in argv  # the actual contract under test
 
     def test_start_twice_raises(self, launch_chrome):
         proc = launch_chrome()
@@ -313,6 +345,8 @@ class TestChromeProcessFailures:
     def test_unresolvable_path_raises_at_construction(self, tmp_path, monkeypatch):
         empty_root = tmp_path / "no-chrome-cache"
         empty_root.mkdir()
+        monkeypatch.delenv("CDPBROWSER_CHROME_PATH", raising=False)
+        monkeypatch.delenv("CHROME_PATH", raising=False)
         monkeypatch.setattr(chrome_mod, "_PUPPETEER_CACHE_ROOTS", [str(empty_root)])
         monkeypatch.setattr(chrome_mod, "_COMMON_PATHS", [])
         with pytest.raises(ChromeLaunchError, match="not found"):

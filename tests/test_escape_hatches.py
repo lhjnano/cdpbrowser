@@ -61,7 +61,7 @@ class TestRunJavascript:
 class TestExecuteCdpCommand:
     def test_browser_level_command_needs_no_session(self, page):
         result = page.connection.send("Browser.getVersion")
-        assert "product" in result and "131" in str(result.get("product", ""))
+        assert str(result.get("product", "")).startswith("Chrome/")
 
     def test_session_level_command_roundtrip(self, page):
         result = page.connection.send(
