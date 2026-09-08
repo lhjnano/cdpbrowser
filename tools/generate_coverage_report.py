@@ -348,8 +348,8 @@ def render_markdown(cov: dict, robot: dict) -> str:
         )
     lines += [
         "",
-        "Robot keyword-adapter lines only count because the Robot suite"
-        " itself runs under coverage — nothing is hidden.",
+        "The Robot suite runs under coverage as well, so lines exercised"
+        " only through keywords are counted.",
         "",
         "## 3. Remaining gaps — classified, with reasons",
         "",
@@ -362,8 +362,8 @@ def render_markdown(cov: dict, robot: dict) -> str:
         "",
         "## 4. Bugs found through cross-validation",
         "",
-        "Real defects this suite (and its recording replay round) surfaced —"
-        " each row is regression-pinned by a test.",
+        "Defects found while building the suite. Each row is pinned by a"
+        " regression test.",
         "",
         "| Area | Bug | Symptom → cause | Fix |",
         "| --- | --- | --- | --- |",

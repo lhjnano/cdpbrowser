@@ -35,8 +35,8 @@ Layer × method matrix · combined pytest + Robot branch coverage · gap classif
 | Module | Stmts | Miss | Branches | Partial | Cover |
 | --- | ---: | ---: | ---: | ---: | :-: |
 | `__init__.py` | 24 | 5 | 4 | 1 | 🔴 79% |
-| `cdp/chrome.py` | 243 | 38 | 84 | 16 | 🔴 83% |
 | `listener.py` | 43 | 5 | 4 | 1 | 🔴 83% |
+| `cdp/chrome.py` | 258 | 38 | 92 | 17 | 🔴 84% |
 | `page.py` | 830 | 100 | 264 | 69 | 🔴 84% |
 | `cdp/transport.py` | 183 | 25 | 34 | 5 | 🟡 86% |
 | `library.py` | 541 | 54 | 134 | 17 | 🟡 89% |
@@ -49,7 +49,7 @@ Layer × method matrix · combined pytest + Robot branch coverage · gap classif
 | `cdp/errors.py` | 15 | 0 | 2 | 0 | 🟢 100% |
 | `keys.py` | 28 | 0 | 12 | 0 | 🟢 100% |
 
-Robot keyword-adapter lines only count because the Robot suite itself runs under coverage — nothing is hidden.
+The Robot suite runs under coverage as well, so lines exercised only through keywords are counted.
 
 ## 3. Remaining gaps — classified, with reasons
 
@@ -67,7 +67,7 @@ Robot keyword-adapter lines only count because the Robot suite itself runs under
 
 ## 4. Bugs found through cross-validation
 
-Real defects this suite (and its recording replay round) surfaced — each row is regression-pinned by a test.
+Defects found while building the suite. Each row is pinned by a regression test.
 
 | Area | Bug | Symptom → cause | Fix |
 | --- | --- | --- | --- |
