@@ -285,6 +285,7 @@ failing.
 | Keyword | Arguments | Description |
 | --- | --- | --- |
 | `Run Javascript` | `expression` | Evaluation with JSON return and awaited promises. Respects frame scope. |
+| `Execute Javascript` | `script` | Same execution, but the return value is discarded before serialization. For jQuery-style chains whose result fails CDP serialization. |
 | `Execute CDP Command` | `method`, `params_json=` | Raw CDP. `Browser.*` and `Target.*` route at browser level. |
 | `Insert Text` | `text` | `Input.insertText` into the focused element. The IME bypass. |
 
@@ -334,6 +335,7 @@ automatic captures. `Set Evidence Mode` selects `off`, `on-failure`
 | `CDPBROWSER_NO_SANDBOX` | `1` forces `--no-sandbox`. |
 | `CDPBROWSER_DISABLE_DEV_SHM` | `1` forces `--disable-dev-shm-usage`. |
 | `CDPBROWSER_UPDATE_BASELINES` | `1` rewrites visual baselines instead of failing. |
+| `CDPBROWSER_SEND_RETRIES` | How many times a timed-out CDP command is retried. Default 1. |
 | `CDPBROWSER_OUTPUT_DIR` | Overrides the artifact outputdir. |
 | `CI` | Set means headless by default. |
 

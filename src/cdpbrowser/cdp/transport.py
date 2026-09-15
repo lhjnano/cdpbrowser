@@ -17,6 +17,8 @@ from __future__ import annotations
 import asyncio
 import fnmatch
 import json
+import logging
+import os
 import queue
 import re
 import threading
@@ -27,6 +29,17 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from websockets.asyncio.client import connect
 from websockets.exceptions import ConnectionClosed
+
+_LOG = logging.getLogger(__name__)
+
+
+def _send_retries() -> int:
+    """Timeout-only send retries from ``CDPBROWSER_SEND_RETRIES`` (default 1)."""
+    raw = str(os.environ.get("CDPBROWSER_SEND_RETRIES", "1")).strip()
+    try:
+        return max(0, int(raw))
+    except ValueError:
+        return 1
 
 from .errors import (
     CdpConnectionClosedError,
@@ -104,6 +117,16 @@ class CdpConnection:
                 self._open_connection(connect_timeout, max_size)
             ).result(connect_timeout + 10.0)
             self._submit(self._start_recv()).result(10.0)
+        except TimeoutError as exc:
+            self.close()
+            raise CdpTimeoutError(
+                f"WebSocket handshake to {self._ws_url} timed out after "
+                f"{connect_timeout}s. Chrome printed its DevTools URL but the "
+                "HTTP server accepted the connection without ever reading the "
+                "request. A locked or sleeping host display is a known cause "
+                "(it freezes headless Chrome's internal threads); unlock the "
+                "display and retry. Also verify the Chrome process is alive."
+            ) from exc
         except BaseException:
             self.close()
             raise
@@ -138,24 +161,43 @@ class CdpConnection:
         (flattened session). Raises :class:`CdpTimeoutError` past the deadline,
         :class:`CdpRemoteError` when the browser answers with an error, and
         :class:`CdpConnectionClosedError` when the connection is closed.
+
+        A command that times out with no response is retried up to
+        ``CDPBROWSER_SEND_RETRIES`` times (default 1), with a warning logged
+        per retry. This absorbs sporadic DevTools hiccups observed on real
+        suites; set the variable to 0 to disable. Remote error responses and
+        closed connections are never retried.
         """
         if self._closed:
             raise CdpConnectionClosedError(
                 "CDP connection is closed; cannot send %r" % (method,)
             )
-        future = self._submit(self._send(method, params, session_id, timeout))
-        try:
-            return future.result(timeout + 10.0)
-        except FutureTimeoutError as exc:
-                    # The loop thread itself is unresponsive — liveness backstop.
-            raise CdpTimeoutError(
-                f"No result within {timeout + 10.0:.1f}s for {method!r} "
-                "(event loop unresponsive)"
-            ) from exc
-        except RuntimeError as exc:
-            raise CdpConnectionClosedError(
-                f"CDP event loop is no longer running while sending {method!r}"
-            ) from exc
+        attempts = 1 + _send_retries()
+        for attempt in range(1, attempts + 1):
+            future = self._submit(self._send(method, params, session_id, timeout))
+            try:
+                return future.result(timeout + 10.0)
+            except FutureTimeoutError as exc:
+                # The loop thread itself is unresponsive — liveness backstop.
+                raise CdpTimeoutError(
+                    f"No result within {timeout + 10.0:.1f}s for {method!r} "
+                    "(event loop unresponsive)"
+                ) from exc
+            except RuntimeError as exc:
+                raise CdpConnectionClosedError(
+                    f"CDP event loop is no longer running while sending {method!r}"
+                ) from exc
+            except CdpTimeoutError:
+                if attempt >= attempts:
+                    raise
+                _LOG.warning(
+                    "CdpConnection.send: %r timed out after %.1fs with no "
+                    "response (attempt %d/%d) — retrying",
+                    method,
+                    timeout,
+                    attempt,
+                    attempts,
+                )
 
     def subscribe(self, method_pattern: str) -> "queue.Queue[CdpEvent]":
         """Subscribes to events. Only events whose ``method`` matches reach this Queue.

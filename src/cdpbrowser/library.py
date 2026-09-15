@@ -522,7 +522,9 @@ class CdpBrowser:
             raise AssertionError(
                 f"{exc} — the element was never observed. "
                 "Element Should Not Exist waits for a present element to "
-                "disappear; verify the selector and page state first."
+                "disappear; verify the selector and page state first. To "
+                "assert absence without prior presence, compare "
+                "`Get Element Count` against 0 instead."
             ) from None
 
         self._assert_poll(
@@ -747,10 +749,30 @@ class CdpBrowser:
         resolution within the ``Set Timeout`` value. Page-side exceptions
         are promoted to failures as-is. When a frame scope is active, the
         expression is evaluated in the current frame context.
+
+        For scripts whose result cannot serialize (jQuery chains fail with
+        "Object reference chain is too long"), use ``Execute Javascript``.
         """
         if not isinstance(expression, str) or not expression.strip():
             raise ValueError("Run Javascript requires a non-empty expression")
         return self._ensure_session().evaluate(expression, timeout=self._timeout)
+
+    def execute_javascript(self, script: str) -> None:
+        """Runs a JavaScript snippet for its side effects; the result is not serialized.
+
+        The snippet runs exactly like ``Run Javascript`` (promises awaited,
+        exceptions promoted, frame scope respected), but the return value is
+        discarded before serialization. This avoids the sporadic CDP error
+        ``-32000: Object reference chain is too long`` that non-serializable
+        return values (jQuery objects, cyclic DOM references) can produce::
+
+            Execute Javascript    $('#foo').iCheck('check'); $('#foo').trigger('ifChecked')
+        """
+        if not isinstance(script, str) or not script.strip():
+            raise ValueError("Execute Javascript requires a non-empty script")
+        self._ensure_session().evaluate(
+            script, timeout=self._timeout, return_by_value=False
+        )
 
     def execute_cdp_command(self, method: str, params_json: str = "") -> Any:
         """Sends a raw CDP command and returns the response as-is (last-resort escape hatch).

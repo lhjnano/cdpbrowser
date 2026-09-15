@@ -1080,16 +1080,32 @@ class PageSession:
                 return
             time.sleep(0.02)
 
-    def evaluate(self, expression: str, *, timeout: float = DEFAULT_TIMEOUT) -> Any:
+    def evaluate(
+        self,
+        expression: str,
+        *,
+        timeout: float = DEFAULT_TIMEOUT,
+        return_by_value: bool = True,
+    ) -> Any:
         """Evaluates an arbitrary JS expression and returns the JSON value (diagnostics/tests).
         Applies the same result-parsing rules as ``call()``.
+
+        With ``return_by_value=False`` the expression still runs (and awaited
+        promises settle) but the result is not serialized — the return value
+        is ``None`` for objects. Use this for side-effect scripts whose result
+        would fail CDP serialization (e.g. jQuery chains: "Object reference
+        chain is too long").
         """
         if not isinstance(expression, str):
             raise TypeError(
                 f"expression must be str, got {type(expression).__name__}"
             )
         return self._evaluate(
-            {"expression": expression, "awaitPromise": True, "returnByValue": True},
+            {
+                "expression": expression,
+                "awaitPromise": True,
+                "returnByValue": bool(return_by_value),
+            },
             timeout,
         )
 

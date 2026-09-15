@@ -42,6 +42,8 @@ class MockCdpServer:
         # method -> delay seconds. Delays responses accordingly.
         # (For timeout scenarios such as late-response cleanup.)
         self.delay_methods: Dict[str, float] = {}
+        # method -> delay applied once (first command only), then removed.
+        self.one_shot_delays: Dict[str, float] = {}
         self.seen_ids: List[int] = []
         self.port = free_port()
 
@@ -99,7 +101,9 @@ class MockCdpServer:
                     continue
                 if self.ignore_ids:
                     continue
-                await self._handle_command(ws, message)
+                # Concurrent handling mirrors Chrome: responses may arrive
+                # out of order, and a slow command must not block others.
+                asyncio.create_task(self._handle_command(ws, message))
         except Exception:  # noqa: BLE001 — handler errors must not kill the thread
             pass
         finally:
@@ -134,6 +138,11 @@ class MockCdpServer:
             )
         else:
             delay = self.delay_methods.get(method)
+            if delay is None:
+                # One-shot delays fire on the first call for the method only —
+                # used to verify send-retry semantics (attempt 1 times out,
+                # attempt 2 succeeds).
+                delay = self.one_shot_delays.pop(method, None)
             if delay is not None:
                 await asyncio.sleep(delay)
             await self._send_json(

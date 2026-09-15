@@ -360,9 +360,13 @@ class ChromeProcess:
         self._stderr_thread.start()
 
         if not self._wait_for_devtools(self._devtools_timeout):
+            # Build the diagnosis BEFORE terminating: cleanup signals would
+            # otherwise turn "still running, endpoint silent" into a
+            # misleading "exited early with code -15/-9".
+            message = self._build_launch_failure_message()
             self._terminate_process()
             self._cleanup_user_data_dir()
-            raise ChromeLaunchError(self._build_launch_failure_message())
+            raise ChromeLaunchError(message)
         return self
 
     def stop(self) -> None:
@@ -425,6 +429,7 @@ class ChromeProcess:
     def _build_launch_failure_message(self) -> str:
         proc = self._proc
         exit_code = proc.poll() if proc is not None else None
+        hints = ""
         if exit_code is not None:
             detail = f"Chrome exited early with code {exit_code}"
         else:
@@ -432,7 +437,14 @@ class ChromeProcess:
                 f"Timed out after {self._devtools_timeout:.0f}s waiting for "
                 "the DevTools endpoint"
             )
-        message = f"{detail} (binary: {self._chrome_path})"
+            hints = (
+                "\nHint: if Chrome printed 'DevTools listening on' but the "
+                "endpoint never answered, a locked or sleeping host display "
+                "is a known cause — it freezes headless Chrome's DevTools "
+                "server (observed: connections accepted, requests never "
+                "read). Unlock the display and retry."
+            )
+        message = f"{detail} (binary: {self._chrome_path}){hints}"
         tail = "\n".join(self._stderr_tail).strip()
         if tail:
             message += f"\nLast stderr output:\n{tail}"
