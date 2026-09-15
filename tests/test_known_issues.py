@@ -1,4 +1,4 @@
-"""Fixes driven by real-suite feedback (documents/cdpbrowser-known-issues.md).
+"""Fixes pinned by feedback from a real external e2e suite.
 
 Issue 1: DevTools handshake timeout carries the locked-display hint.
 Issue 2: Execute Javascript skips result serialization.
