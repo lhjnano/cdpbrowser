@@ -319,6 +319,40 @@ controllable: the OS, browser chrome, and physical devices.
 | Partial | Canvas and WebGL. No element anchors; use `Click At Coordinates` with visual assertions. |
 | Unsupported | OS-native dialogs, desktop-to-browser drags, real IME composition (use `Insert Text`), anti-bot evasion. |
 
+## Parallel and multi-agent use
+
+Several agents or test runners can drive CdpBrowser at the same time.
+
+**Separate processes, separate browsers.** Every launch uses
+`--remote-debugging-port=0`, so the OS assigns a free port, and a fresh
+temporary `--user-data-dir`, so profiles never collide. Nothing is shared
+at module level: each process gets its own Chrome, connection, and state.
+Parallel `pabot` runs work the same way. When several processes share one
+working directory, give each its own `CDPBROWSER_OUTPUT_DIR` so evidence
+and download paths do not overlap.
+
+**Several browsers inside one process.** The core is instance based, so
+nothing stops a single script from running two independent browsers:
+
+```python
+chrome_a = ChromeProcess(find_chrome(), headless=True).start()
+chrome_b = ChromeProcess(find_chrome(), headless=True).start()
+session_a = PageSession(CdpConnection(chrome_a.ws_url)).attach()
+session_b = PageSession(CdpConnection(chrome_b.ws_url)).attach()
+```
+
+Each `PageSession` owns its target, dialog arms, downloads, and frame
+scope. Tabs within one browser are cheaper still: see `New Tab`.
+
+**Not supported: sharing one Chrome across processes.** There is no
+keyword to attach to an externally running browser. Ownership of the
+lifecycle and the browser-global download path would need an explicit
+policy first.
+
+The Robot keyword layer drives one browser per library instance; a single
+suite that needs two browsers should either use `New Tab`, or run the
+second browser through the core from a keyword.
+
 ## Evidence
 
 Captures land in `{outputdir}/evidence/{suite}/{test}/NNNN-{label}.png`.
