@@ -1,0 +1,40 @@
+# test-exist-gate: fails when a source file has no matching test file.
+#
+# hurdle maps every source file to a test file by static name mapping
+# (e.g. src/cdpbrowser/page.py -> tests/test_page.py). If this check is red,
+# your PR added or renamed a source file without a matching test: add the test
+# (preferred), or, for a genuinely untestable file, add an entry to
+# .hurdle.json with a justification.
+#
+# To enforce it: Settings -> Branches -> branch protection rule ->
+# require status check "test-exist-gate / scan".
+
+name: test-exist-gate
+
+on: [push, pull_request]
+
+permissions:
+  contents: read
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install hurdle
+        run: python3 -m pip install --quiet "git+https://github.com/lhjnano/hurdle.git@v0.2.0"
+
+      - name: Scan
+        # Full scan (no --diff ratchet): this repo resolves every legacy gap
+        # through the .hurdle.json allowlist, so strict mode can only go red
+        # on NEW source files that lack a matching test.
+        run: hurdle scan . --strict --config .hurdle.json --json hurdle-report.json
+
+      - name: Upload hurdle report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hurdle-report
+          path: hurdle-report.json
+          if-no-files-found: ignore

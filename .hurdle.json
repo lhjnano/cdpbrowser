@@ -1,0 +1,8 @@
+{
+  "allowlist": {
+    "src/CdpBrowser.py": "re-export shim for Robot Framework bare-name import; exercised by tests/test_packaging.py and CI core-only job",
+    "src/cdpbrowser/bridge.js": "page-injected JS asset shipped as package-data; exercised end-to-end by the Python visual/dialog test suites (no JS harness in this repo)",
+    "src/cdpbrowser/recorder.js": "page-injected JS asset shipped as package-data; exercised end-to-end by the recorder test suites (no JS harness in this repo)",
+    "tools/generate_coverage_report.py": "developer reporting tool, run via make coverage, not shipped code"
+  }
+}
