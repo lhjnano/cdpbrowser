@@ -4,7 +4,8 @@
     "src/cdpbrowser/bridge.js": "page-injected JS asset shipped as package-data; exercised end-to-end by the Python visual/dialog test suites (no JS harness in this repo)",
     "src/cdpbrowser/recorder.js": "page-injected JS asset shipped as package-data; exercised end-to-end by the recorder test suites (no JS harness in this repo)",
     "tools/generate_coverage_report.py": "developer reporting tool, run via make coverage, not shipped code",
-    "tools/update_cdp_universe.py": "developer tool — regenerates universes/*.json via make update-protocol, not shipped code"
+    "tools/update_cdp_universe.py": "developer tool — regenerates universes/*.json via make update-protocol, not shipped code",
+    "tools/generate_universe_report.py": "developer tool — renders docs/cdp-coverage.html via make universe-report, not shipped code"
   },
   "universes": {
     "cdp-commands": {
