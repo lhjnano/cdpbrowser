@@ -34,10 +34,10 @@ jobs:
       - name: Universe coverage (CDP commands)
         # Every CDP command must be used, wildcard-covered, or allowlisted
         # with a reviewed reason — no silent gaps against protocol.json.
-        run: hurdle universe cdp-commands . --strict --config .hurdle.json --json universe-commands.json
+        run: hurdle universe cdp-commands . --strict --json universe-commands.json
 
       - name: Universe coverage (CDP events)
-        run: hurdle universe cdp-events . --strict --config .hurdle.json --json universe-events.json
+        run: hurdle universe cdp-events . --strict --json universe-events.json
 
       - name: Upload hurdle report
         if: always()
