@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install hurdle
-        run: python3 -m pip install --quiet "git+https://github.com/lhjnano/hurdle.git@v0.2.0"
+        run: python3 -m pip install --quiet "git+https://github.com/lhjnano/hurdle.git@v0.3.0"
 
       - name: Scan
         # Full scan (no --diff ratchet): this repo resolves every legacy gap
@@ -31,10 +31,21 @@ jobs:
         # on NEW source files that lack a matching test.
         run: hurdle scan . --strict --config .hurdle.json --json hurdle-report.json
 
+      - name: Universe coverage (CDP commands)
+        # Every CDP command must be used, wildcard-covered, or allowlisted
+        # with a reviewed reason — no silent gaps against protocol.json.
+        run: hurdle universe cdp-commands . --strict --config .hurdle.json --json universe-commands.json
+
+      - name: Universe coverage (CDP events)
+        run: hurdle universe cdp-events . --strict --config .hurdle.json --json universe-events.json
+
       - name: Upload hurdle report
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: hurdle-report
-          path: hurdle-report.json
+          path: |
+            hurdle-report.json
+            universe-commands.json
+            universe-events.json
           if-no-files-found: ignore

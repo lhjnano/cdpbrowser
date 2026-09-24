@@ -23,3 +23,6 @@ coverage:
 
 report:
 	$(PY) tools/generate_coverage_report.py
+
+update-protocol:
+	python3 tools/update_cdp_universe.py
