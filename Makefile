@@ -26,3 +26,8 @@ report:
 
 update-protocol:
 	python3 tools/update_cdp_universe.py
+
+universe-report:
+	hurdle universe cdp-commands . --json universe-commands.json
+	hurdle universe cdp-events . --json universe-events.json
+	python3 tools/generate_universe_report.py

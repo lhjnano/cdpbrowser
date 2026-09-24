@@ -20,3 +20,8 @@ evidence/
 .idea/
 *.swp
 .DS_Store
+
+# hurdle universe reports (generated)
+universe-commands.json
+universe-events.json
+hurdle-report.json
