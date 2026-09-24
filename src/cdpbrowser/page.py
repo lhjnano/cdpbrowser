@@ -557,6 +557,10 @@ class PageSession:
         # Download directory (None -> temporary dir on first download).
         # The library sets it via the evidence convention (results/downloads/{suite}/{test}).
         self._download_dir: Optional[str] = None
+        # Viewport override bookkeeping — True between set_viewport() and a
+        # verified reset, so reset_viewport() never silently no-ops on a
+        # stuck override (CI flake: "375 == 375" after Reset Viewport).
+        self._viewport_overridden: bool = False
 
     # ------------------------------------------------------------------
     # Public API
@@ -1056,14 +1060,30 @@ class PageSession:
                 {"enabled": True, "maxTouchPoints": 5},
                 session_id=self._session_id,
             )
+        self._viewport_overridden = True
+
+    def _wait_viewport_change(self, overridden, timeout: float) -> bool:
+        """Waits up to ``timeout`` s for layout metrics to differ from ``overridden``."""
+        deadline = time.monotonic() + timeout
+        while time.monotonic() < deadline:
+            if self.evaluate("[window.innerWidth, window.innerHeight]") != overridden:
+                return True
+            time.sleep(0.02)
+        return False
 
     def reset_viewport(self) -> None:
         """Clears the viewport override and restores the default state.
 
-        Clearing applies asynchronously, so the method waits up to 0.5s for
-        the layout metrics to change before returning — when no override was
-        active the metrics stay put and it waits out the deadline (harmless).
+        Clearing applies asynchronously, so the method waits for the layout
+        metrics to change; if the plain clear does not take effect it applies
+        the CDP-documented reset (``setDeviceMetricsOverride`` with 0x0
+        metrics, which falls back to defaults) and waits once more. Raises
+        :class:`CdpError` when an override was active but never went away,
+        so callers cannot silently proceed with a stuck viewport. Calling
+        this without a preceding ``set_viewport`` is a fast no-op.
         """
+        if not self._viewport_overridden:
+            return
         self._ensure_attached()
         overridden = self.evaluate("[window.innerWidth, window.innerHeight]")
         self._conn.send(
@@ -1074,11 +1094,25 @@ class PageSession:
         self._conn.send(
             "Emulation.clearDeviceMetricsOverride", {}, session_id=self._session_id
         )
-        deadline = time.monotonic() + 0.5
-        while time.monotonic() < deadline:
-            if self.evaluate("[window.innerWidth, window.innerHeight]") != overridden:
-                return
-            time.sleep(0.02)
+        if self._wait_viewport_change(overridden, 1.0):
+            self._viewport_overridden = False
+            return
+        # Canonical reset per CDP docs: zero metrics fall back to defaults.
+        self._conn.send(
+            "Emulation.setDeviceMetricsOverride",
+            {"width": 0, "height": 0, "deviceScaleFactor": 0, "mobile": False},
+            session_id=self._session_id,
+        )
+        if self._wait_viewport_change(overridden, 1.0):
+            self._viewport_overridden = False
+            return
+        # Nothing more we can do — surface the condition once instead of
+        # letting callers silently proceed (or teardown cascade on repeat).
+        self._viewport_overridden = False
+        raise CdpError(
+            "viewport reset had no effect: layout metrics still %r after "
+            "clearDeviceMetricsOverride and the 0x0 fallback" % (overridden,)
+        )
 
     def evaluate(
         self,

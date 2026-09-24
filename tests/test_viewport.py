@@ -69,6 +69,27 @@ class TestViewport:
         with pytest.raises(ValueError, match="positive"):
             page.set_viewport(0, 800)
 
+    def test_reset_raises_when_override_never_applies(self, page, monkeypatch):
+        """Regression (CI flake "375 == 375"): if the clear never takes
+        effect, reset must raise a diagnosable error — after applying the
+        CDP 0x0 fallback — instead of silently returning."""
+        from cdpbrowser.cdp.errors import CdpError
+
+        page.set_viewport(375, 812, mobile=True)
+        assert page._viewport_overridden is True
+        # Simulate the stuck condition: metrics never change from here on.
+        monkeypatch.setattr(page, "evaluate", lambda expr, **kw: [375, 812])
+        with pytest.raises(CdpError, match="viewport reset had no effect"):
+            page.reset_viewport()
+        # The error is surfaced exactly once; a repeat call is a no-op so
+        # teardown cannot cascade.
+        assert page._viewport_overridden is False
+        page.reset_viewport()
+
+    def test_reset_without_override_is_noop(self, page):
+        assert page._viewport_overridden is False
+        page.reset_viewport()  # returns immediately, no CDP traffic needed
+
     def test_viewport_is_per_tab(self, page, chrome_process):
         other = PageSession(page.connection).attach()
         other.navigate(DEMO.as_uri())
