@@ -235,11 +235,17 @@ class TestLocatorType:
 
 class TestModule:
     def test_version(self):
-        # The runtime version must track the installed distribution —
-        # hardcoded literals here break every release bump.
-        import importlib.metadata as im
+        # The runtime version must track the declared package version —
+        # hardcoded literals break every release bump, and importlib.metadata
+        # breaks on stale editable installs. The source of truth is
+        # pyproject.toml, always present next to this test tree.
+        import re
+        from pathlib import Path
 
-        assert cdpbrowser.__version__ == im.version("cdpbrowser")
+        pyproject = Path(__file__).resolve().parent.parent / "pyproject.toml"
+        declared = re.search(r'^version = "([^"]+)"', pyproject.read_text(), re.M)
+        assert declared is not None, "version not found in pyproject.toml"
+        assert cdpbrowser.__version__ == declared.group(1)
 
     @pytest.mark.parametrize(
         "selector",
