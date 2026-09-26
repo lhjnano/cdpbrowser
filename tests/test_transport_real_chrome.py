@@ -147,7 +147,17 @@ class TestRealChrome:
         assert "Chrome" in product, f"unexpected product string: {product!r}"
 
     def test_target_get_targets_roundtrip(self, chrome):
-        result = chrome.send("Target.getTargets", timeout=10)
-        assert result is not None
-        assert isinstance(result.get("targetInfos"), list)
-        assert len(result["targetInfos"]) >= 1  # even headless has an about:blank target
+        # The initial about:blank target registers asynchronously and can lag
+        # the DevTools socket on slow CI runners (observed: empty list right
+        # after startup) — poll briefly instead of asserting on one shot.
+        deadline = time.monotonic() + 5.0
+        infos: List[dict] = []
+        while time.monotonic() < deadline:
+            result = chrome.send("Target.getTargets", timeout=10)
+            assert result is not None
+            assert isinstance(result.get("targetInfos"), list)
+            infos = result["targetInfos"]
+            if infos:
+                break
+            time.sleep(0.1)
+        assert len(infos) >= 1  # even headless has an about:blank target
