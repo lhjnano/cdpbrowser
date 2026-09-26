@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Install hurdle
-        run: python3 -m pip install --quiet "git+https://github.com/lhjnano/hurdle.git@v0.3.0"
+        run: python3 -m pip install --quiet "hurdle-gate==0.3.1"
 
       - name: Scan
         # Full scan (no --diff ratchet): this repo resolves every legacy gap
