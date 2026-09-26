@@ -411,3 +411,7 @@ sits at [docs/coverage.html](docs/coverage.html).
 | websockets | 17.1 |
 | Chrome | Chrome for Testing 131 locally, Chrome stable 152 on CI |
 | Pillow, optional | 12.x |
+
+## License
+
+Apache License 2.0 — see [LICENSE](LICENSE).

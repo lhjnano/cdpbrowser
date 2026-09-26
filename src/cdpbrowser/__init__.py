@@ -10,7 +10,7 @@ install it with ``pip install 'cdpbrowser[robot]'``.
 
 from importlib.util import find_spec as _find_spec
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 #: Guidance shown when the Robot adapter is accessed without robotframework.
 ROBOT_INSTALL_HINT = (

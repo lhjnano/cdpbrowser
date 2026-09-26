@@ -4,9 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "cdpbrowser"
-version = "0.1.0"
+version = "0.1.1"
 description = "Framework-independent pure-CDP browser automation core for Python, with an optional Robot Framework adapter"
 readme = "README.md"
+license = "Apache-2.0"
 requires-python = ">=3.10"
 dependencies = [
     "websockets>=17.0",
