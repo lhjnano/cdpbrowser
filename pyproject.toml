@@ -11,6 +11,19 @@ requires-python = ">=3.10"
 dependencies = [
     "websockets>=17.0",
 ]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Software Development :: Quality Assurance",
+]
+
+[project.urls]
+Homepage = "https://github.com/lhjnano/cdpbrowser"
 
 [project.optional-dependencies]
 robot = ["robotframework>=7.0"]
