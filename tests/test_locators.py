@@ -235,7 +235,11 @@ class TestLocatorType:
 
 class TestModule:
     def test_version(self):
-        assert cdpbrowser.__version__ == "0.1.0"
+        # The runtime version must track the installed distribution —
+        # hardcoded literals here break every release bump.
+        import importlib.metadata as im
+
+        assert cdpbrowser.__version__ == im.version("cdpbrowser")
 
     @pytest.mark.parametrize(
         "selector",
